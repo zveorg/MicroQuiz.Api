@@ -1,0 +1,70 @@
+{
+  "ReRoutes": [
+    {
+      "UseServiceDiscovery": true,
+      "DownstreamPathTemplate": "/ping",
+      "DownstreamScheme": "http",
+      "ServiceName": "quiz-service",
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
+      },
+      "UpstreamPathTemplate": "/api/quiz-service/ping",
+      "UpstreamHttpMethod": [ "GET" ],
+      "ReRoutesCaseSensitive": false
+    },
+    {
+      "UseServiceDiscovery": true,
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "ServiceName": "quiz-service",
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
+      },
+      "UpstreamPathTemplate": "/api/quiz-service/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE"
+      ],
+      "ReRoutesCaseSensitive": false,
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "MicroQquizAuthKey",
+        "AllowedScopes": [ "quiz-api" ]
+      }
+    },
+    {
+      "UseServiceDiscovery": true,
+      "DownstreamPathTemplate": "/ping",
+      "DownstreamScheme": "http",
+      "ServiceName": "auth-service",
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
+      },
+      "UpstreamPathTemplate": "/api/auth-service/ping",
+      "UpstreamHttpMethod": [ "GET" ],
+      "ReRoutesCaseSensitive": false
+    },
+    {
+      "UseServiceDiscovery": true,
+      "DownstreamPathTemplate": "/{everything}",
+      "DownstreamScheme": "http",
+      "ServiceName": "auth-service",
+      "UpstreamPathTemplate": "/api/auth-service/{everything}",
+      "UpstreamHttpMethod": [
+        "GET",
+        "POST",
+        "OPTIONS"
+      ],
+      "ReRoutesCaseSensitive": false
+    }
+  ],
+  "GlobalConfiguration": {
+    "ServiceDiscoveryProvider": {
+      "Host": "host.docker.internal",
+      "Port": 8500,
+      "Type": "Consul",
+      "ConfigurationKey": "MicroQuiz"
+    }
+  }
+}
